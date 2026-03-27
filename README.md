@@ -1,18 +1,35 @@
+name: generate snake animation
 
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
-## salve mano Richard aqui 👋
+  workflow_dispatch:
 
-<!--
-**RichardBSi/RichardBsi** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+  push:
+    branches:
+      - main
 
-Here are some ideas to get you started:
+jobs:
+  generate:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+    steps:
+      - name: generate snake animation
+        uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/snake.svg
+            dist/snake-dark.svg?palette=github-dark
+
+      - name: publish files
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: output
+          build_dir: dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
